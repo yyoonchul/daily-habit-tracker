@@ -4,12 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LiquidGlassView, LiquidGlassContainerView, isLiquidGlassSupported } from '@callstack/liquid-glass';
 
-import { useRoutines } from '@/contexts/RoutineContext';
-import { useTheme } from '@/contexts/ThemeContext';
-import { Routine } from '@/types';
-import { LiquidGlassButton, LiquidGlassCard, LiquidGlassIconButton } from '@/components/ui';
+import { useRoutines } from '../../../contexts/RoutineContext';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { Routine } from '../../../types';
+import { LiquidGlassButton, LiquidGlassCard, LiquidGlassIconButton } from '../../../components/ui';
 
-export default function HomeScreen() {
+export default function RoutineScreen() {
   const { routines, toggleRoutine, addRoutine } = useRoutines();
   const { primaryColor } = useTheme();
   const [showAddForm, setShowAddForm] = useState(false);
@@ -219,11 +219,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 24,
+    padding: 16,
+    borderRadius: 16,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
   },
   addButton: {
     width: 40,
@@ -247,7 +248,6 @@ const styles = StyleSheet.create({
   statsTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: 'white',
     marginLeft: 8,
   },
   statsContent: {
@@ -255,7 +255,6 @@ const styles = StyleSheet.create({
   },
   completionText: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
     marginBottom: 12,
   },
   progressBar: {
@@ -273,15 +272,15 @@ const styles = StyleSheet.create({
   completionRate: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
   },
   routinesSection: {
     marginBottom: 24,
+    padding: 16,
+    borderRadius: 16,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: 'white',
     marginBottom: 16,
   },
   routineCard: {
@@ -301,7 +300,6 @@ const styles = StyleSheet.create({
   routineTitle: {
     fontSize: 16,
     fontWeight: '500',
-    color: 'white',
     marginBottom: 8,
   },
   completedText: {
@@ -320,11 +318,9 @@ const styles = StyleSheet.create({
   },
   routineTime: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.7)',
   },
   routineFrequency: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.7)',
     textTransform: 'capitalize',
   },
   routineStreak: {
@@ -334,10 +330,11 @@ const styles = StyleSheet.create({
   emptyState: {
     alignItems: 'center',
     paddingVertical: 48,
+    padding: 20,
+    borderRadius: 16,
   },
   emptyText: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
     marginTop: 16,
     marginBottom: 24,
   },

@@ -4,9 +4,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LiquidGlassView, LiquidGlassContainerView, isLiquidGlassSupported } from '@callstack/liquid-glass';
 
-import { useRoutines } from '@/contexts/RoutineContext';
-import { useTheme } from '@/contexts/ThemeContext';
-import { LiquidGlassButton, LiquidGlassCard } from '@/components/ui';
+import { useRoutines } from '../../../contexts/RoutineContext';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { LiquidGlassButton, LiquidGlassCard } from '../../../components/ui';
 
 const { width } = Dimensions.get('window');
 
@@ -87,84 +87,147 @@ export default function AnalyticsScreen() {
   );
 
   const TrendsSection = () => (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Trends</Text>
-        <Text style={styles.sectionSubtitle}>Completion rate over time</Text>
-      </View>
+    <LiquidGlassView style={styles.section} effect="clear">
+      <LiquidGlassView style={styles.sectionHeader} effect="clear">
+        <Text style={[styles.sectionTitle, { color: PlatformColor('labelColor') }]}>Trends</Text>
+        <Text style={[styles.sectionSubtitle, { color: PlatformColor('secondaryLabelColor') }]}>
+          Completion rate over time
+        </Text>
+      </LiquidGlassView>
       
-      <View style={styles.chartCard}>
+      <LiquidGlassView
+        style={[
+          styles.chartCard,
+          !isLiquidGlassSupported && styles.fallbackCard,
+        ]}
+        effect="regular"
+      >
         <View style={styles.chartHeader}>
-          <Ionicons name="trending-up" size={20} color={primaryColor} />
-          <Text style={styles.chartTitle}>Completion Rate Trend</Text>
+          <Ionicons name="trending-up" size={20} color={PlatformColor('systemBlue')} />
+          <Text style={[styles.chartTitle, { color: PlatformColor('labelColor') }]}>
+            Completion Rate Trend
+          </Text>
         </View>
         <View style={styles.chartPlaceholder}>
-          <Ionicons name="bar-chart" size={48} color={primaryColor} />
-          <Text style={styles.chartText}>Chart visualization would go here</Text>
+          <Ionicons name="bar-chart" size={48} color={PlatformColor('systemBlue')} />
+          <Text style={[styles.chartText, { color: PlatformColor('secondaryLabelColor') }]}>
+            Chart visualization would go here
+          </Text>
         </View>
-      </View>
-    </View>
+      </LiquidGlassView>
+    </LiquidGlassView>
   );
 
   const ActivitySection = () => (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Activity</Text>
-        <Text style={styles.sectionSubtitle}>Monthly completion heatmap</Text>
-      </View>
+    <LiquidGlassView style={styles.section} effect="clear">
+      <LiquidGlassView style={styles.sectionHeader} effect="clear">
+        <Text style={[styles.sectionTitle, { color: PlatformColor('labelColor') }]}>Activity</Text>
+        <Text style={[styles.sectionSubtitle, { color: PlatformColor('secondaryLabelColor') }]}>
+          Monthly completion heatmap
+        </Text>
+      </LiquidGlassView>
       
-      <View style={styles.calendarCard}>
+      <LiquidGlassView
+        style={[
+          styles.calendarCard,
+          !isLiquidGlassSupported && styles.fallbackCard,
+        ]}
+        effect="regular"
+      >
         <View style={styles.calendarHeader}>
-          <TouchableOpacity>
-            <Ionicons name="chevron-back" size={20} color="white" />
-          </TouchableOpacity>
-          <Text style={styles.calendarMonth}>September 2024</Text>
-          <TouchableOpacity>
-            <Ionicons name="chevron-forward" size={20} color="white" />
-          </TouchableOpacity>
+          <LiquidGlassView
+            style={styles.calendarNavButton}
+            effect="clear"
+            interactive
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Previous month"
+          >
+            <Ionicons name="chevron-back" size={20} color={PlatformColor('labelColor')} />
+          </LiquidGlassView>
+          <Text style={[styles.calendarMonth, { color: PlatformColor('labelColor') }]}>
+            September 2024
+          </Text>
+          <LiquidGlassView
+            style={styles.calendarNavButton}
+            effect="clear"
+            interactive
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Next month"
+          >
+            <Ionicons name="chevron-forward" size={20} color={PlatformColor('labelColor')} />
+          </LiquidGlassView>
         </View>
         <View style={styles.calendarGrid}>
           {Array.from({ length: 30 }, (_, i) => (
-            <View key={i} style={[styles.calendarDay, { backgroundColor: primaryColor + '40' }]}>
-              <Text style={styles.calendarDayText}>{i + 1}</Text>
-            </View>
+            <LiquidGlassView
+              key={i}
+              style={[
+                styles.calendarDay,
+                { backgroundColor: PlatformColor('systemBlue') + '40' }
+              ]}
+              effect="clear"
+            >
+              <Text style={[styles.calendarDayText, { color: PlatformColor('labelColor') }]}>
+                {i + 1}
+              </Text>
+            </LiquidGlassView>
           ))}
         </View>
-      </View>
-    </View>
+      </LiquidGlassView>
+    </LiquidGlassView>
   );
 
   const RoutinesSection = () => (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Routines</Text>
-        <Text style={styles.sectionSubtitle}>Individual routine details</Text>
-      </View>
+    <LiquidGlassView style={styles.section} effect="clear">
+      <LiquidGlassView style={styles.sectionHeader} effect="clear">
+        <Text style={[styles.sectionTitle, { color: PlatformColor('labelColor') }]}>Routines</Text>
+        <Text style={[styles.sectionSubtitle, { color: PlatformColor('secondaryLabelColor') }]}>
+          Individual routine details
+        </Text>
+      </LiquidGlassView>
       
-      <View style={styles.routinesCard}>
+      <LiquidGlassView
+        style={[
+          styles.routinesCard,
+          !isLiquidGlassSupported && styles.fallbackCard,
+        ]}
+        effect="regular"
+      >
         {routines.map((routine) => (
-          <TouchableOpacity key={routine.id} style={styles.routineItem}>
+          <LiquidGlassView
+            key={routine.id}
+            style={styles.routineItem}
+            effect="clear"
+            interactive
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={`${routine.title} - ${routine.completed ? 'Completed' : 'Pending'}`}
+          >
             <View style={styles.routineInfo}>
-              <Text style={styles.routineName}>{routine.title}</Text>
-              <Text style={styles.routineMeta}>
+              <Text style={[styles.routineName, { color: PlatformColor('labelColor') }]}>
+                {routine.title}
+              </Text>
+              <Text style={[styles.routineMeta, { color: PlatformColor('secondaryLabelColor') }]}>
                 {routine.frequency} • {routine.scheduledTime}
               </Text>
             </View>
             <View style={styles.routineStats}>
-              <Text style={[styles.routineStreak, { color: primaryColor }]}>
+              <Text style={[styles.routineStreak, { color: PlatformColor('systemOrange') }]}>
                 {routine.streak} day streak
               </Text>
               <Text style={[
                 styles.routineStatus,
-                { color: routine.completed ? primaryColor : '#999' }
+                { color: routine.completed ? PlatformColor('systemGreen') : PlatformColor('secondaryLabelColor') }
               ]}>
                 {routine.completed ? 'Completed' : 'Pending'}
               </Text>
             </View>
-          </TouchableOpacity>
+          </LiquidGlassView>
         ))}
-      </View>
-    </View>
+      </LiquidGlassView>
+    </LiquidGlassView>
   );
 
   const renderSection = () => {
@@ -229,19 +292,21 @@ const styles = StyleSheet.create({
   section: {
     flex: 1,
     paddingBottom: 20,
+    padding: 16,
+    borderRadius: 16,
   },
   sectionHeader: {
     marginBottom: 24,
+    padding: 16,
+    borderRadius: 12,
   },
   sectionTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
     marginBottom: 8,
   },
   sectionSubtitle: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
   },
   mainCard: {
     borderRadius: 16,
@@ -257,12 +322,10 @@ const styles = StyleSheet.create({
   mainValue: {
     fontSize: 48,
     fontWeight: 'bold',
-    color: 'white',
     marginVertical: 8,
   },
   mainLabel: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
   },
   secondaryCards: {
     flexDirection: 'row',
@@ -277,19 +340,15 @@ const styles = StyleSheet.create({
   secondaryValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
     marginVertical: 4,
   },
   secondaryLabel: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.8)',
     textAlign: 'center',
   },
   chartCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 16,
     padding: 20,
-    backdropFilter: 'blur(10px)',
   },
   chartHeader: {
     flexDirection: 'row',
@@ -299,7 +358,6 @@ const styles = StyleSheet.create({
   chartTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: 'white',
     marginLeft: 8,
   },
   chartPlaceholder: {
@@ -309,14 +367,11 @@ const styles = StyleSheet.create({
   },
   chartText: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
     marginTop: 8,
   },
   calendarCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 16,
     padding: 20,
-    backdropFilter: 'blur(10px)',
   },
   calendarHeader: {
     flexDirection: 'row',
@@ -324,10 +379,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
+  calendarNavButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   calendarMonth: {
     fontSize: 16,
     fontWeight: '600',
-    color: 'white',
   },
   calendarGrid: {
     flexDirection: 'row',
@@ -343,23 +404,21 @@ const styles = StyleSheet.create({
   },
   calendarDayText: {
     fontSize: 12,
-    color: 'white',
     fontWeight: '500',
   },
   routinesCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 16,
     padding: 16,
     maxHeight: 300,
-    backdropFilter: 'blur(10px)',
   },
   routineItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    marginBottom: 8,
   },
   routineInfo: {
     flex: 1,
@@ -367,12 +426,10 @@ const styles = StyleSheet.create({
   routineName: {
     fontSize: 14,
     fontWeight: '500',
-    color: 'white',
     marginBottom: 4,
   },
   routineMeta: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.7)',
   },
   routineStats: {
     alignItems: 'flex-end',
@@ -388,6 +445,8 @@ const styles = StyleSheet.create({
   navigation: {
     alignItems: 'center',
     paddingVertical: 16,
+    padding: 16,
+    borderRadius: 16,
   },
   sectionIndicators: {
     flexDirection: 'row',
