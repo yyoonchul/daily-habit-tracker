@@ -1,9 +1,9 @@
-# Apple Routine Flow - Product Requirements Document (PRD)
+# Daily Habit Tracker - Product Requirements Document (PRD)
 
 ## 1. Product Overview
 
 ### 1.1 Product Name
-**Apple Routine Flow** - iOS-style routine management and tracking application
+**Daily Habit Tracker** - iOS-style routine management and tracking application
 
 ### 1.2 Product Vision
 An intuitive and beautiful mobile application that helps users systematically manage their daily routines and maintain consistent execution
