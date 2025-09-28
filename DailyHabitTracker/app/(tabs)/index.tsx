@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, PlatformColor } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { LiquidGlassView, LiquidGlassContainerView, isLiquidGlassSupported } from '@callstack/liquid-glass';
 
 import { useRoutines } from '@/contexts/RoutineContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Routine } from '@/types';
+import { LiquidGlassButton, LiquidGlassCard, LiquidGlassIconButton } from '@/components/ui';
 
 export default function HomeScreen() {
   const { routines, toggleRoutine, addRoutine } = useRoutines();
@@ -52,36 +54,53 @@ export default function HomeScreen() {
   };
 
   const RoutineCard = ({ routine }: { routine: Routine }) => (
-    <TouchableOpacity
-      style={[styles.routineCard, routine.completed && styles.completedCard]}
+    <LiquidGlassView
+      style={[
+        styles.routineCard,
+        routine.completed && styles.completedCard,
+        !isLiquidGlassSupported && styles.fallbackCard,
+      ]}
+      effect="clear"
+      interactive
+      tintColor={routine.completed ? 'rgba(52, 199, 89, 0.1)' : undefined}
       onPress={() => toggleRoutine(routine.id)}
-      activeOpacity={0.7}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={`${routine.completed ? 'Mark as incomplete' : 'Mark as complete'} ${routine.title}`}
     >
       <View style={styles.routineContent}>
-        <Text style={[styles.routineTitle, routine.completed && styles.completedText]}>
+        <Text style={[
+          styles.routineTitle, 
+          routine.completed && styles.completedText,
+          { color: PlatformColor('labelColor') }
+        ]}>
           {routine.title}
         </Text>
         <View style={styles.routineMeta}>
           <View style={styles.routineInfo}>
-            <Ionicons name="time-outline" size={16} color="#666" />
-            <Text style={styles.routineTime}>{routine.scheduledTime}</Text>
+            <Ionicons name="time-outline" size={16} color={PlatformColor('secondaryLabelColor')} />
+            <Text style={[styles.routineTime, { color: PlatformColor('secondaryLabelColor') }]}>
+              {routine.scheduledTime}
+            </Text>
           </View>
           <View style={styles.routineInfo}>
-            <Ionicons name="repeat-outline" size={16} color="#666" />
-            <Text style={styles.routineFrequency}>{routine.frequency}</Text>
+            <Ionicons name="repeat-outline" size={16} color={PlatformColor('secondaryLabelColor')} />
+            <Text style={[styles.routineFrequency, { color: PlatformColor('secondaryLabelColor') }]}>
+              {routine.frequency}
+            </Text>
           </View>
           <View style={styles.routineInfo}>
-            <Ionicons name="flame-outline" size={16} color={primaryColor} />
-            <Text style={[styles.routineStreak, { color: primaryColor }]}>
+            <Ionicons name="flame-outline" size={16} color={PlatformColor('systemOrange')} />
+            <Text style={[styles.routineStreak, { color: PlatformColor('systemOrange') }]}>
               {routine.streak} day streak
             </Text>
           </View>
         </View>
       </View>
       {routine.completed && (
-        <Ionicons name="checkmark-circle" size={24} color={primaryColor} />
+        <Ionicons name="checkmark-circle" size={24} color={PlatformColor('systemGreen')} />
       )}
-    </TouchableOpacity>
+    </LiquidGlassView>
   );
 
   return (
@@ -92,21 +111,38 @@ export default function HomeScreen() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Apple Routine Flow</Text>
-            <TouchableOpacity style={styles.addButton} onPress={handleAddRoutine}>
-              <Ionicons name="add" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
+          <LiquidGlassView style={styles.header} effect="clear">
+            <Text style={[styles.headerTitle, { color: PlatformColor('labelColor') }]}>
+              Apple Routine Flow
+            </Text>
+            <LiquidGlassIconButton
+              name="add"
+              size={24}
+              onPress={handleAddRoutine}
+              style={styles.addButton}
+              effect="regular"
+              tintColor="rgba(0, 122, 255, 0.1)"
+              accessibilityLabel="Add new routine"
+            />
+          </LiquidGlassView>
 
           {/* Progress Stats */}
-          <View style={styles.statsCard}>
+          <LiquidGlassView
+            style={[
+              styles.statsCard,
+              !isLiquidGlassSupported && styles.fallbackCard,
+            ]}
+            effect="regular"
+            tintColor="rgba(0, 122, 255, 0.1)"
+          >
             <View style={styles.statsHeader}>
-              <Ionicons name="target" size={24} color={primaryColor} />
-              <Text style={styles.statsTitle}>Today's Progress</Text>
+              <Ionicons name="target" size={24} color={PlatformColor('systemBlue')} />
+              <Text style={[styles.statsTitle, { color: PlatformColor('labelColor') }]}>
+                Today's Progress
+              </Text>
             </View>
             <View style={styles.statsContent}>
-              <Text style={styles.completionText}>
+              <Text style={[styles.completionText, { color: PlatformColor('secondaryLabelColor') }]}>
                 {completedToday} / {totalRoutines} completed
               </Text>
               <View style={styles.progressBar}>
@@ -115,32 +151,52 @@ export default function HomeScreen() {
                     styles.progressFill, 
                     { 
                       width: `${completionRate}%`,
-                      backgroundColor: primaryColor 
+                      backgroundColor: PlatformColor('systemBlue')
                     }
                   ]} 
                 />
               </View>
-              <Text style={styles.completionRate}>{completionRate}%</Text>
+              <Text style={[styles.completionRate, { color: PlatformColor('labelColor') }]}>
+                {completionRate}%
+              </Text>
             </View>
-          </View>
+          </LiquidGlassView>
 
           {/* Routines List */}
-          <View style={styles.routinesSection}>
-            <Text style={styles.sectionTitle}>Today's Routines</Text>
+          <LiquidGlassView style={styles.routinesSection} effect="clear">
+            <Text style={[styles.sectionTitle, { color: PlatformColor('labelColor') }]}>
+              Today's Routines
+            </Text>
             {sortedRoutines.length > 0 ? (
-              sortedRoutines.map((routine) => (
-                <RoutineCard key={routine.id} routine={routine} />
-              ))
+              <LiquidGlassContainerView spacing={12}>
+                {sortedRoutines.map((routine) => (
+                  <RoutineCard key={routine.id} routine={routine} />
+                ))}
+              </LiquidGlassContainerView>
             ) : (
-              <View style={styles.emptyState}>
-                <Ionicons name="list-outline" size={48} color="#999" />
-                <Text style={styles.emptyText}>No routines yet</Text>
-                <TouchableOpacity style={styles.emptyButton} onPress={handleAddRoutine}>
-                  <Text style={styles.emptyButtonText}>Add Your First Routine</Text>
-                </TouchableOpacity>
-              </View>
+              <LiquidGlassView
+                style={[
+                  styles.emptyState,
+                  !isLiquidGlassSupported && styles.fallbackCard,
+                ]}
+                effect="regular"
+                tintColor="rgba(0, 122, 255, 0.05)"
+              >
+                <Ionicons name="list-outline" size={48} color={PlatformColor('tertiaryLabelColor')} />
+                <Text style={[styles.emptyText, { color: PlatformColor('secondaryLabelColor') }]}>
+                  No routines yet
+                </Text>
+                <LiquidGlassButton
+                  title="Add Your First Routine"
+                  onPress={handleAddRoutine}
+                  variant="primary"
+                  size="medium"
+                  style={styles.emptyButton}
+                  accessibilityLabel="Add your first routine"
+                />
+              </LiquidGlassView>
             )}
-          </View>
+          </LiquidGlassView>
         </View>
       </ScrollView>
     </LinearGradient>
@@ -170,19 +226,18 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   addButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 20,
     width: 40,
     height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   statsCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 16,
     padding: 20,
     marginBottom: 24,
-    backdropFilter: 'blur(10px)',
+  },
+  fallbackCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   statsHeader: {
     flexDirection: 'row',
@@ -230,17 +285,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   routineCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backdropFilter: 'blur(10px)',
   },
   completedCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    opacity: 0.7,
   },
   routineContent: {
     flex: 1,
@@ -289,13 +342,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   emptyButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 20,
-  },
-  emptyButtonText: {
-    color: 'white',
-    fontWeight: '500',
+    marginTop: 16,
   },
 });

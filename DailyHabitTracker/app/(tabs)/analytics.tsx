@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, PlatformColor } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { LiquidGlassView, LiquidGlassContainerView, isLiquidGlassSupported } from '@callstack/liquid-glass';
 
 import { useRoutines } from '@/contexts/RoutineContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { LiquidGlassButton, LiquidGlassCard } from '@/components/ui';
 
 const { width } = Dimensions.get('window');
 
@@ -24,31 +26,64 @@ export default function AnalyticsScreen() {
     : 0;
 
   const OverviewSection = () => (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Overview</Text>
-        <Text style={styles.sectionSubtitle}>Today's performance summary</Text>
-      </View>
+    <LiquidGlassView style={styles.section} effect="clear">
+      <LiquidGlassView style={styles.sectionHeader} effect="clear">
+        <Text style={[styles.sectionTitle, { color: PlatformColor('labelColor') }]}>Overview</Text>
+        <Text style={[styles.sectionSubtitle, { color: PlatformColor('secondaryLabelColor') }]}>
+          Today's performance summary
+        </Text>
+      </LiquidGlassView>
       
-      <View style={styles.mainCard}>
-        <Ionicons name="target" size={32} color={primaryColor} />
-        <Text style={styles.mainValue}>{completionRate}%</Text>
-        <Text style={styles.mainLabel}>Today's Completion</Text>
-      </View>
+      <LiquidGlassView
+        style={[
+          styles.mainCard,
+          !isLiquidGlassSupported && styles.fallbackCard,
+        ]}
+        effect="regular"
+        tintColor="rgba(0, 122, 255, 0.1)"
+      >
+        <Ionicons name="target" size={32} color={PlatformColor('systemBlue')} />
+        <Text style={[styles.mainValue, { color: PlatformColor('labelColor') }]}>
+          {completionRate}%
+        </Text>
+        <Text style={[styles.mainLabel, { color: PlatformColor('secondaryLabelColor') }]}>
+          Today's Completion
+        </Text>
+      </LiquidGlassView>
 
-      <View style={styles.secondaryCards}>
-        <View style={styles.secondaryCard}>
-          <Ionicons name="trending-up" size={24} color={primaryColor} />
-          <Text style={styles.secondaryValue}>{averageStreak}</Text>
-          <Text style={styles.secondaryLabel}>Average Streak</Text>
-        </View>
-        <View style={styles.secondaryCard}>
-          <Ionicons name="calendar" size={24} color={primaryColor} />
-          <Text style={styles.secondaryValue}>{routines.length}</Text>
-          <Text style={styles.secondaryLabel}>Total Routines</Text>
-        </View>
-      </View>
-    </View>
+      <LiquidGlassContainerView spacing={16}>
+        <LiquidGlassView
+          style={[
+            styles.secondaryCard,
+            !isLiquidGlassSupported && styles.fallbackCard,
+          ]}
+          effect="clear"
+        >
+          <Ionicons name="trending-up" size={24} color={PlatformColor('systemGreen')} />
+          <Text style={[styles.secondaryValue, { color: PlatformColor('labelColor') }]}>
+            {averageStreak}
+          </Text>
+          <Text style={[styles.secondaryLabel, { color: PlatformColor('secondaryLabelColor') }]}>
+            Average Streak
+          </Text>
+        </LiquidGlassView>
+        <LiquidGlassView
+          style={[
+            styles.secondaryCard,
+            !isLiquidGlassSupported && styles.fallbackCard,
+          ]}
+          effect="clear"
+        >
+          <Ionicons name="calendar" size={24} color={PlatformColor('systemOrange')} />
+          <Text style={[styles.secondaryValue, { color: PlatformColor('labelColor') }]}>
+            {routines.length}
+          </Text>
+          <Text style={[styles.secondaryLabel, { color: PlatformColor('secondaryLabelColor') }]}>
+            Total Routines
+          </Text>
+        </LiquidGlassView>
+      </LiquidGlassContainerView>
+    </LiquidGlassView>
   );
 
   const TrendsSection = () => (
@@ -152,21 +187,29 @@ export default function AnalyticsScreen() {
           {renderSection()}
         </ScrollView>
         
-        <View style={styles.navigation}>
-          <View style={styles.sectionIndicators}>
+        <LiquidGlassView style={styles.navigation} effect="clear">
+          <LiquidGlassContainerView spacing={8}>
             {sections.map((_, index) => (
-              <TouchableOpacity
+              <LiquidGlassView
                 key={index}
                 style={[
                   styles.indicator,
-                  currentSection === index && styles.activeIndicator
+                  currentSection === index && styles.activeIndicator,
+                  !isLiquidGlassSupported && styles.fallbackIndicator,
                 ]}
+                effect={currentSection === index ? "regular" : "clear"}
+                interactive
                 onPress={() => setCurrentSection(index)}
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityLabel={`Navigate to ${sections[index]} section`}
               />
             ))}
-          </View>
-          <Text style={styles.sectionTitle}>{sections[currentSection]}</Text>
-        </View>
+          </LiquidGlassContainerView>
+          <Text style={[styles.sectionTitle, { color: PlatformColor('labelColor') }]}>
+            {sections[currentSection]}
+          </Text>
+        </LiquidGlassView>
       </View>
     </LinearGradient>
   );
@@ -201,12 +244,15 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.7)',
   },
   mainCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 16,
     padding: 24,
     alignItems: 'center',
     marginBottom: 20,
-    backdropFilter: 'blur(10px)',
+  },
+  fallbackCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   mainValue: {
     fontSize: 48,
@@ -224,11 +270,9 @@ const styles = StyleSheet.create({
   },
   secondaryCard: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
-    backdropFilter: 'blur(10px)',
   },
   secondaryValue: {
     fontSize: 24,
@@ -354,10 +398,11 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   activeIndicator: {
-    backgroundColor: 'white',
     transform: [{ scale: 1.25 }],
+  },
+  fallbackIndicator: {
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
 });
