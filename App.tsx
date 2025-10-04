@@ -1,6 +1,7 @@
-import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import { AppRegistry } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Import contexts
@@ -24,3 +25,6 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+
+// Register the main component
+AppRegistry.registerComponent('main', () => App);
