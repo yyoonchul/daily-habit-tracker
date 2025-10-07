@@ -1,79 +1,60 @@
 import React from 'react';
-import { Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { PlatformColor } from 'react-native';
-import { LiquidGlassView, isLiquidGlassSupported } from '@callstack/liquid-glass';
+import { StyleSheet, ViewStyle, PlatformColor, View } from 'react-native';
+
+// Safe import for Expo Go (when native module is missing)
+let LiquidGlassViewSafe: any = View;
+let liquidGlassSupported = false as boolean;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const mod = require('@callstack/liquid-glass');
+  LiquidGlassViewSafe = mod?.LiquidGlassView ?? View;
+  liquidGlassSupported = Boolean(mod?.isLiquidGlassSupported);
+} catch (_e) {
+  LiquidGlassViewSafe = View;
+  liquidGlassSupported = false;
+}
 
 interface LiquidGlassCardProps {
   children: React.ReactNode;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
-  effect?: 'clear' | 'regular' | 'none';
   interactive?: boolean;
-  tintColor?: string;
-  colorScheme?: 'light' | 'dark' | 'system';
+  effect?: 'clear' | 'regular' | 'none';
+  style?: ViewStyle;
   onPress?: () => void;
-  accessible?: boolean;
-  accessibilityRole?: string;
-  accessibilityLabel?: string;
-  accessibilityHint?: string;
 }
 
-export const LiquidGlassCard: React.FC<LiquidGlassCardProps> = ({
+export function LiquidGlassCard({
   children,
-  style,
-  textStyle,
+  interactive = false,
   effect = 'clear',
-  interactive = true,
-  tintColor,
-  colorScheme = 'system',
+  style,
   onPress,
-  accessible = true,
-  accessibilityRole = 'button',
-  accessibilityLabel,
-  accessibilityHint,
-}) => {
-  const cardStyle = [
-    styles.card,
-    !isLiquidGlassSupported && styles.fallbackCard,
-    style,
-  ];
-
+}: LiquidGlassCardProps) {
   return (
-    <LiquidGlassView
-      style={cardStyle}
-      effect={effect}
+    <LiquidGlassViewSafe
+      style={[
+        styles.card,
+        !liquidGlassSupported && styles.fallback,
+        style,
+      ]}
       interactive={interactive}
-      tintColor={tintColor}
-      colorScheme={colorScheme}
+      effect={effect}
       onPress={onPress}
-      accessible={accessible}
-      accessibilityRole={accessibilityRole}
-      accessibilityLabel={accessibilityLabel}
-      accessibilityHint={accessibilityHint}
     >
-      {typeof children === 'string' ? (
-        <Text style={[styles.text, textStyle]}>{children}</Text>
-      ) : (
-        children
-      )}
-    </LiquidGlassView>
+      {children}
+    </LiquidGlassViewSafe>
   );
-};
+}
 
 const styles = StyleSheet.create({
   card: {
     padding: 16,
     borderRadius: 16,
-    margin: 8,
+    marginVertical: 4,
   },
-  fallbackCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  fallback: {
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
-  text: {
-    color: PlatformColor('labelColor'),
-    fontSize: 16,
-    fontWeight: '500',
-  },
 });
+

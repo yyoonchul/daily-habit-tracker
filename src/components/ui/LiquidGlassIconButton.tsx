@@ -1,78 +1,60 @@
 import React from 'react';
-import { StyleSheet, ViewStyle } from 'react-native';
-import { PlatformColor } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, ViewStyle, PlatformColor, Pressable } from 'react-native';
 import { LiquidGlassView, isLiquidGlassSupported } from '@callstack/liquid-glass';
+import { Ionicons } from '@expo/vector-icons';
 
 interface LiquidGlassIconButtonProps {
-  name: keyof typeof Ionicons.glyphMap;
+  icon: keyof typeof Ionicons.glyphMap;
+  onPress?: () => void;
   size?: number;
-  onPress: () => void;
-  style?: ViewStyle;
-  effect?: 'clear' | 'regular' | 'none';
   color?: string;
+  style?: ViewStyle;
   disabled?: boolean;
-  accessible?: boolean;
-  accessibilityLabel?: string;
-  accessibilityHint?: string;
 }
 
-export const LiquidGlassIconButton: React.FC<LiquidGlassIconButtonProps> = ({
-  name,
-  size = 20,
+export function LiquidGlassIconButton({
+  icon,
   onPress,
-  style,
-  effect = 'regular',
+  size = 20,
   color,
+  style,
   disabled = false,
-  accessible = true,
-  accessibilityLabel,
-  accessibilityHint,
-}) => {
-  const buttonStyle = [
-    styles.button,
-    disabled && styles.disabled,
-    !isLiquidGlassSupported && styles.fallbackButton,
-    style,
-  ];
-
+}: LiquidGlassIconButtonProps) {
   const iconColor = color || PlatformColor('labelColor');
 
   return (
-    <LiquidGlassView
-      style={buttonStyle}
-      effect={effect}
-      interactive={!disabled}
-      onPress={disabled ? undefined : onPress}
-      accessible={accessible}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
-      accessibilityHint={accessibilityHint}
-      accessibilityState={{ disabled }}
-    >
-      <Ionicons
-        name={name}
-        size={size}
-        color={disabled ? PlatformColor('tertiaryLabelColor') : iconColor}
-      />
-    </LiquidGlassView>
+    <Pressable onPress={disabled ? undefined : onPress} disabled={disabled}>
+      <LiquidGlassView
+        style={[
+          styles.iconButton,
+          !isLiquidGlassSupported && styles.fallback,
+          disabled && styles.disabled,
+          style,
+        ]}
+        interactive={!disabled}
+        effect="regular"
+      >
+        <Ionicons name={icon} size={size} color={iconColor} />
+      </LiquidGlassView>
+    </Pressable>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  button: {
+  iconButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  fallbackButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
   disabled: {
     opacity: 0.5,
   },
+  fallback: {
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
 });
+

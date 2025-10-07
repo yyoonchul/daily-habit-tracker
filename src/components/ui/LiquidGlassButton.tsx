@@ -1,75 +1,57 @@
 import React from 'react';
-import { Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { PlatformColor } from 'react-native';
+import { Text, StyleSheet, ViewStyle, TextStyle, PlatformColor, Pressable } from 'react-native';
 import { LiquidGlassView, isLiquidGlassSupported } from '@callstack/liquid-glass';
 
 interface LiquidGlassButtonProps {
-  title: string;
-  onPress: () => void;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
+  children: React.ReactNode;
+  onPress?: () => void;
   variant?: 'primary' | 'secondary' | 'ghost';
   size?: 'small' | 'medium' | 'large';
-  effect?: 'clear' | 'regular' | 'none';
   disabled?: boolean;
-  loading?: boolean;
-  accessible?: boolean;
-  accessibilityLabel?: string;
-  accessibilityHint?: string;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
 }
 
-export const LiquidGlassButton: React.FC<LiquidGlassButtonProps> = ({
-  title,
+export function LiquidGlassButton({
+  children,
   onPress,
-  style,
-  textStyle,
   variant = 'primary',
   size = 'medium',
-  effect = 'regular',
   disabled = false,
-  loading = false,
-  accessible = true,
-  accessibilityLabel,
-  accessibilityHint,
-}) => {
-  const buttonStyle = [
-    styles.button,
-    styles[variant],
-    styles[size],
-    disabled && styles.disabled,
-    !isLiquidGlassSupported && styles.fallbackButton,
-    style,
-  ];
-
-  const textStyleCombined = [
-    styles.text,
-    styles[`${variant}Text`],
-    styles[`${size}Text`],
-    disabled && styles.disabledText,
-    textStyle,
-  ];
-
+  style,
+  textStyle,
+}: LiquidGlassButtonProps) {
+  const effect = variant === 'primary' ? 'regular' : variant === 'secondary' ? 'clear' : 'none';
   const tintColor = variant === 'primary' ? 'rgba(0, 122, 255, 0.1)' : undefined;
 
   return (
-    <LiquidGlassView
-      style={buttonStyle}
-      effect={effect}
-      interactive={!disabled && !loading}
-      tintColor={tintColor}
-      onPress={disabled || loading ? undefined : onPress}
-      accessible={accessible}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel || title}
-      accessibilityHint={accessibilityHint}
-      accessibilityState={{ disabled: disabled || loading }}
-    >
-      <Text style={textStyleCombined}>
-        {loading ? 'Loading...' : title}
-      </Text>
-    </LiquidGlassView>
+    <Pressable onPress={disabled ? undefined : onPress} disabled={disabled}>
+      <LiquidGlassView
+        style={[
+          styles.button,
+          styles[size],
+          !isLiquidGlassSupported && styles.fallback,
+          disabled && styles.disabled,
+          style,
+        ]}
+        interactive={!disabled}
+        effect={effect}
+        tintColor={tintColor}
+      >
+        <Text
+          style={[
+            styles.text,
+            { color: PlatformColor('labelColor') },
+            variant === 'primary' && styles.primaryText,
+            textStyle,
+          ]}
+        >
+          {children}
+        </Text>
+      </LiquidGlassView>
+    </Pressable>
   );
-};
+}
 
 const styles = StyleSheet.create({
   button: {
@@ -77,61 +59,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 12,
   },
-  fallbackButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  primary: {
-    backgroundColor: 'rgba(0, 122, 255, 0.1)',
-  },
-  secondary: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  ghost: {
-    backgroundColor: 'transparent',
-  },
   small: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    minHeight: 36,
   },
   medium: {
     paddingHorizontal: 24,
     paddingVertical: 12,
-    minHeight: 44,
   },
   large: {
     paddingHorizontal: 32,
     paddingVertical: 16,
-    minHeight: 52,
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  primaryText: {
+    fontWeight: 'bold',
   },
   disabled: {
     opacity: 0.5,
   },
-  text: {
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  primaryText: {
-    color: PlatformColor('systemBlue'),
-  },
-  secondaryText: {
-    color: PlatformColor('labelColor'),
-  },
-  ghostText: {
-    color: PlatformColor('labelColor'),
-  },
-  smallText: {
-    fontSize: 14,
-  },
-  mediumText: {
-    fontSize: 16,
-  },
-  largeText: {
-    fontSize: 18,
-  },
-  disabledText: {
-    color: PlatformColor('tertiaryLabelColor'),
+  fallback: {
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
 });
+
